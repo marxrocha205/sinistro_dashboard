@@ -25,4 +25,8 @@ RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-CMD ["gunicorn", "sinistro_dash.wsgi:application", "--bind", "0.0.0.0:8080"]
+CMD gunicorn sinistro_dash.wsgi:application \
+    --bind 0.0.0.0:$PORT \
+    --workers 2 \
+    --threads 4 \
+    --timeout 120
