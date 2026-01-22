@@ -1,0 +1,77 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Detalhe do Sinistro{% endblock %}
+
+{% block content %}
+<h3 class="mb-3">Sinistro #{{ sinistro.id }}</h3>
+
+<div class="row">
+  <div class="col-md-6">
+    <p><strong>Tipo:</strong> {{ sinistro.tipo_principal }}</p>
+    <p><strong>Endereço:</strong> {{ sinistro.endereco|default:"Não informado" }}</p>
+    <p><strong>Ponto de referência:</strong> {{ sinistro.ponto_referencia|default:"—" }}</p>
+    <p><strong>Data:</strong> {{ sinistro.data_hora }}</p>
+    <p><strong>Vítima fatal:</strong> {{ sinistro.houve_vitima_fatal|yesno:"Sim,Não" }}</p>
+
+    <p class="mt-3">
+      <strong>Coordenadas:</strong><br>
+      Lat: {{ sinistro.latitude }}<br>
+      Lng: {{ sinistro.longitude }}
+    </p>
+  </div>
+
+  <div class="col-md-6">
+    <!-- 🗺️ MAPA -->
+    <div
+      id="map"
+      style="height: 350px; border-radius: 8px;"
+      class="shadow-sm"
+    ></div>
+  </div>
+</div>
+
+<hr>
+
+<h5 class="mt-4">📸 Fotos do Sinistro</h5>
+
+{% if sinistro.fotos %}
+  <div class="row">
+    {% for foto in sinistro.fotos %}
+      <div class="col-md-3 mb-3">
+        <img
+          src="{{ API_BASE }}/media/{{ foto.caminho_arquivo }}"
+          class="img-fluid rounded shadow-sm"
+          alt="Foto do sinistro"
+        >
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-muted">Nenhuma foto enviada para este sinistro.</p>
+{% endif %}
+
+{% endblock %}
+{% block extra_js %}
+<script>
+  {% if sinistro.latitude and sinistro.longitude %}
+    const lat = {{ sinistro.latitude }};
+    const lng = {{ sinistro.longitude }};
+
+    const map = L.map('map').setView([lat, lng], 16);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    L.marker([lat, lng])
+      .addTo(map)
+      .bindPopup(
+        `<strong>Sinistro #{{ sinistro.id }}</strong><br>
+         {{ sinistro.endereco|default:"Local do sinistro" }}`
+      )
+      .openPopup();
+  {% else %}
+    document.getElementById("map").innerHTML =
+      "<p class='text-muted text-center mt-4'>Localização não informada</p>";
+  {% endif %}
+</script>
+{% endblock %}
