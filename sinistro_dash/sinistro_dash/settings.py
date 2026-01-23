@@ -137,12 +137,13 @@ API_BASE_URL = "https://sinistroapi-production.up.railway.app"
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 SESSION_COOKIE_SECURE = True
-
 SESSION_COOKIE_SAMESITE = "None"
 
 CSRF_COOKIE_SECURE = True
 
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SESSION_COOKIE_DOMAIN = ".up.railway.app"
+CSRF_COOKIE_DOMAIN = ".up.railway.app"
 
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
 
