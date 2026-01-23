@@ -11,7 +11,9 @@ class AuthService:
                 "password": password,
             },
         )
-
+        print("LOGIN URL:", url)
+        print("STATUS:", response.status_code)
+        print("BODY:", response.text)
         if response.status_code != 200:
             return None
 
