@@ -11,10 +11,16 @@ class AuthService:
                 "password": password,
             },
         )
-        print("LOGIN URL:", url)
-        print("STATUS:", response.status_code)
-        print("BODY:", response.text)
+
+        # 🔥 DEBUG
+        print("LOGIN STATUS:", response.status_code)
+        print("LOGIN BODY:", response.text)
+
         if response.status_code != 200:
             return None
 
-        return response.json().get("access_token")
+        data = response.json()
+
+        print("LOGIN JSON:", data)
+
+        return data.get("access_token")
