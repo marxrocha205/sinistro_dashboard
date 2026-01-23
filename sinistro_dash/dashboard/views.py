@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 from datetime import date
+from django.urls import reverse
 
 from .services.sinistro_service import SinistroService
 from .services.auth_service import AuthService
@@ -27,7 +28,7 @@ def login_view(request):
             request.session["api_token"] = token
             print("🚀 REDIRECT PARA OVERVIEW")
             print("SESSION:", request.session.items())
-            return HttpResponseRedirect("/")
+            return redirect("dashboard:overview")
 
         print("❌ DASH LOGIN FALHOU")
         messages.error(request, "Usuário ou senha inválidos")
