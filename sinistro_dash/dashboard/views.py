@@ -24,6 +24,8 @@ def login_view(request):
         if token:
             print("✅ DASH LOGIN OK — token salvo:", token[:25])
             request.session["api_token"] = token
+            print("🚀 REDIRECT PARA OVERVIEW")
+            print("SESSION:", request.session.items())
             return redirect("dashboard:overview")
 
         print("❌ DASH LOGIN FALHOU")
