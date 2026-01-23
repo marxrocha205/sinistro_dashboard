@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 from datetime import date
 
@@ -8,6 +8,7 @@ from .services.sinistro_service import SinistroService
 from .services.auth_service import AuthService
 from .services.user_service import UserService
 from .decorators import api_login_required
+
 
 
 def health_check(request):
@@ -26,7 +27,7 @@ def login_view(request):
             request.session["api_token"] = token
             print("🚀 REDIRECT PARA OVERVIEW")
             print("SESSION:", request.session.items())
-            return redirect("dashboard:overview")
+            return HttpResponseRedirect("/")
 
         print("❌ DASH LOGIN FALHOU")
         messages.error(request, "Usuário ou senha inválidos")
