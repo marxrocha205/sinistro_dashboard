@@ -10,7 +10,7 @@ from .services.user_service import UserService
 from .decorators import api_login_required
 
 
-
+print("📂 views.py CARREGADO")
 def health_check(request):
     return HttpResponse("Dashboard OK")
 
@@ -46,7 +46,7 @@ def logout_view(request):
 # ================================
 @api_login_required
 def overview_view(request):
-
+    print("🔥 OVERVIEW VIEW CHAMADA")
     token = request.session.get("api_token")
     print("📊 OVERVIEW — token recebido:", token)
 
