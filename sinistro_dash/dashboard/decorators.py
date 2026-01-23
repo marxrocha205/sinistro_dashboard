@@ -1,7 +1,7 @@
 from functools import wraps
 from django.shortcuts import redirect
 
-
+print(" decorators.py CARREGADO ")
 def api_login_required(view_func):
 
     @wraps(view_func)
