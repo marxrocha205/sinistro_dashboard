@@ -18,11 +18,11 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . .
 
-# ⬇️ entra na pasta do Django
 WORKDIR /app/sinistro_dash
 
-RUN python manage.py collectstatic --noinput
+EXPOSE 8080
 
-EXPOSE 8000
-
-CMD ["gunicorn", "sinistro_dash.wsgi:application", "--bind", "0.0.0.0:8080"]
+CMD gunicorn sinistro_dash.wsgi:application \
+    --bind 0.0.0.0:8080 \
+    --workers 2 \
+    --timeout 120
