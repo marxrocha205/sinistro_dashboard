@@ -131,4 +131,4 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-API_BASE_URL = "https://sinistros-api-production.up.railway.app"
+API_BASE_URL = "https://sinistroapi-production.up.railway.app"
