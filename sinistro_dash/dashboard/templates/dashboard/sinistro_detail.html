@@ -21,11 +21,7 @@
 
   <div class="col-md-6">
     <!-- 🗺️ MAPA -->
-    <div
-      id="map"
-      style="height: 350px; border-radius: 8px;"
-      class="shadow-sm"
-    ></div>
+    <div id="map" style="height: 350px; border-radius: 8px;" class="shadow-sm"></div>
   </div>
 </div>
 
@@ -34,44 +30,44 @@
 <h5 class="mt-4">📸 Fotos do Sinistro</h5>
 
 {% if sinistro.fotos %}
-  <div class="row">
-    {% for foto in sinistro.fotos %}
-      <div class="col-md-3 mb-3">
-        <img
-          src="{{ API_BASE }}/media/{{ foto.caminho_arquivo }}"
-          class="img-fluid rounded shadow-sm"
-          alt="Foto do sinistro"
-        >
-      </div>
-    {% endfor %}
+<div class="row">
+  {% for foto in sinistro.fotos %}
+  <div class="col-md-3 mb-3">
+    <img src="{{ foto.url }}" class="img-fluid rounded shadow-sm" alt="Foto do sinistro">
   </div>
+  {% endfor %}
+</div>
 {% else %}
-  <p class="text-muted">Nenhuma foto enviada para este sinistro.</p>
+<p class="text-muted">Nenhuma foto enviada para este sinistro.</p>
 {% endif %}
 
 {% endblock %}
 {% block extra_js %}
 <script>
   {% if sinistro.latitude and sinistro.longitude %}
-    const lat = {{ sinistro.latitude }};
-    const lng = {{ sinistro.longitude }};
+  const lat = {{ sinistro.latitude }};
+  const lng = {{ sinistro.longitude }};
 
-    const map = L.map('map').setView([lat, lng], 16);
+  const map = L.map('map').setView([lat, lng], 16);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap'
-    }).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
 
-    L.marker([lat, lng])
-      .addTo(map)
-      .bindPopup(
-        `<strong>Sinistro #{{ sinistro.id }}</strong><br>
-         {{ sinistro.endereco|default:"Local do sinistro" }}`
-      )
-      .openPopup();
+  L.marker([lat, lng])
+    .addTo(map)
+    .bindPopup(
+      `<strong>Sinistro #{{ sinistro.id }}</strong><br>
+         {{ sinistro.endereco|default:"Local do sinistro" }}`< img
+  src = "{{ foto.url }}"
+  class= "img-fluid rounded shadow-sm"
+  alt = "Foto do sinistro"
+      >
+    )
+    .openPopup();
   {% else %}
-    document.getElementById("map").innerHTML =
-      "<p class='text-muted text-center mt-4'>Localização não informada</p>";
+  document.getElementById("map").innerHTML =
+    "<p class='text-muted text-center mt-4'>Localização não informada</p>";
   {% endif %}
 </script>
 {% endblock %}
