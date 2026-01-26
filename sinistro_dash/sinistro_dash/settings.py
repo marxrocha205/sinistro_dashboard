@@ -80,11 +80,11 @@ WSGI_APPLICATION = 'sinistro_dash.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("MYSQL_DB"),
-        "USER": os.environ.get("MYSQL_USER"),
-        "PASSWORD": os.environ.get("MYSQL_PASSWORD"),
-        "HOST": os.environ.get("MYSQL_HOST"),
-        "PORT": os.environ.get("MYSQL_PORT", "3306"),
+        "NAME": os.environ.get("DB_NAME"),
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": os.environ.get("DB_HOST"),
+        "PORT": os.environ.get("DB_PORT", "57102"),
         "OPTIONS": {
             "charset": "utf8mb4",
         },
@@ -131,4 +131,16 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-API_BASE_URL = "https://sinistros-api-production.up.railway.app"
+API_BASE_URL = "https://sinistroapi-production.up.railway.app"
+# ===== SESSION FIX RAILWAY =====
+
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = "None"
+
+CSRF_COOKIE_SECURE = True
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+
