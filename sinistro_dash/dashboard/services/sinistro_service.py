@@ -8,17 +8,11 @@ class SinistroService:
     # ===============================
 
     @staticmethod
-    def list(token: str, params: dict):
-        response = APIClient.get(
-            "/sinistros",
-            token=token,
-            params=params,
-        )
-
-        print("🚨 LIST STATUS:", response.status_code)
-        print("🚨 LIST BODY:", response.text)
+    def list(token, params=None):
+        response = APIClient.get("/sinistros/", token=token, params=params)
 
         if response.status_code != 200:
+            print("🚨 LIST SINISTROS ERRO:", response.status_code, response.text)
             return {"total": 0, "items": []}
 
         return response.json()
@@ -48,20 +42,14 @@ class SinistroService:
     # ===============================
 
     @staticmethod
-    def list_mapa(token: str):
-
-        response = APIClient.get(
-            "/sinistros/mapa",
-            token=token
-        )
-
-        print("🗺 MAPA STATUS:", response.status_code)
+    def list_mapa(token):
+        response = APIClient.get("/sinistros/mapa", token=token)
 
         if response.status_code != 200:
+            print("🗺 MAPA ERRO:", response.status_code, response.text)
             return []
 
         return response.json()
-
     # ===============================
     # COUNT
     # ===============================
