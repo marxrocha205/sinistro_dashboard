@@ -44,30 +44,26 @@
 {% endblock %}
 {% block extra_js %}
 <script>
-  {% if sinistro.latitude and sinistro.longitude %}
-  const lat = {{ sinistro.latitude }};
-  const lng = {{ sinistro.longitude }};
+{% if sinistro.latitude and sinistro.longitude %}
+const lat = {{ sinistro.latitude }};
+const lng = {{ sinistro.longitude }};
 
-  const map = L.map('map').setView([lat, lng], 16);
+const map = L.map('map').setView([lat, lng], 16);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap'
-  }).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap'
+}).addTo(map);
 
-  L.marker([lat, lng])
-    .addTo(map)
-    .bindPopup(
-      `<strong>Sinistro #{{ sinistro.id }}</strong><br>
-         {{ sinistro.endereco|default:"Local do sinistro" }}`< img
-  src = "{{ foto.url }}"
-  class= "img-fluid rounded shadow-sm"
-  alt = "Foto do sinistro"
-      >
-    )
-    .openPopup();
-  {% else %}
-  document.getElementById("map").innerHTML =
-    "<p class='text-muted text-center mt-4'>Localização não informada</p>";
-  {% endif %}
+L.marker([lat, lng])
+  .addTo(map)
+  .bindPopup(`
+    <strong>Sinistro #{{ sinistro.id }}</strong><br>
+    {{ sinistro.endereco|default:"Local do sinistro" }}
+  `)
+  .openPopup();
+{% else %}
+document.getElementById("map").innerHTML =
+  "<p class='text-muted text-center mt-4'>Localização não informada</p>";
+{% endif %}
 </script>
 {% endblock %}
