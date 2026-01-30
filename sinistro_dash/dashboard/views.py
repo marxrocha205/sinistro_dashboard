@@ -1,12 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.conf import settings
 from datetime import date
-from django.urls import reverse
 
-from sinistro_dash.dashboard.services.dashboard_service import DashboardService
-
+from .services.dashboard_service import DashboardService
 from .services.sinistro_service import SinistroService
 from .services.auth_service import AuthService
 from .services.user_service import UserService
