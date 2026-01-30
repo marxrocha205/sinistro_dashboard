@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<h3 class="mb-4">Visão Geral</h3>
+<h3 class="mb-4">📊 Visão Geral dos Sinistros</h3>
 
 <!-- 🔢 CARDS -->
 <div class="row mb-4">
@@ -11,7 +11,7 @@
     <div class="card shadow-sm text-center">
       <div class="card-body">
         <h6>Total de Sinistros</h6>
-        <h3>{{ data.cards.total|default:"0" }}</h3>
+        <h3>{{ data.cards.total }}</h3>
       </div>
     </div>
   </div>
@@ -20,7 +20,7 @@
     <div class="card shadow-sm text-center">
       <div class="card-body">
         <h6>Hoje</h6>
-        <h3>{{ data.cards.today|default:"0" }}</h3>
+        <h3>{{ data.cards.today }}</h3>
       </div>
     </div>
   </div>
@@ -29,7 +29,7 @@
     <div class="card shadow-sm text-center">
       <div class="card-body">
         <h6>No Mês</h6>
-        <h3>{{ data.cards.month|default:"0" }}</h3>
+        <h3>{{ data.cards.month }}</h3>
       </div>
     </div>
   </div>
@@ -38,10 +38,15 @@
 <!-- 📊 GRÁFICOS -->
 <div class="row mb-4">
   <div class="col-md-6">
-    <canvas id="chartCategorias"></canvas>
+    <div class="card shadow-sm p-3">
+      <canvas id="chartCategorias"></canvas>
+    </div>
   </div>
+
   <div class="col-md-6">
-    <canvas id="chartTimeline"></canvas>
+    <div class="card shadow-sm p-3">
+      <canvas id="chartTimeline"></canvas>
+    </div>
   </div>
 </div>
 
@@ -49,9 +54,7 @@
 <div class="row">
   <div class="col-md-3">
     <div class="card shadow-sm">
-      <div class="card-header fw-bold">
-        Sinistros
-      </div>
+      <div class="card-header fw-bold">Sinistros</div>
       <ul class="list-group list-group-flush" id="sinistro-list"></ul>
     </div>
   </div>
@@ -65,11 +68,11 @@
 
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 
 <script>
-/* ======================
-   📊 GRÁFICOS
-====================== */
+/* 📊 GRÁFICOS */
 const categorias = {{ data.categorias|safe }};
 const timeline = {{ data.timeline|safe }};
 
@@ -79,7 +82,7 @@ new Chart(document.getElementById("chartCategorias"), {
     labels: categorias.map(c => c.label),
     datasets: [{
       label: "Sinistros",
-      data: categorias.map(c => c.value),
+      data: categorias.map(c => c.value)
     }]
   }
 });
@@ -90,73 +93,44 @@ new Chart(document.getElementById("chartTimeline"), {
     labels: timeline.map(t => t.date),
     datasets: [{
       label: "Sinistros por dia",
-      data: timeline.map(t => t.value),
+      data: timeline.map(t => t.value)
     }]
   }
 });
 
-/* ======================
-   🗺️ MAPA + HEATMAP
-====================== */
-const sinistrosRaw = {{ data.mapa|safe }};
+/* 🗺️ MAPA */
+const sinistros = {{ data.mapa|safe }};
 
-// ✅ só os que têm localização
-const sinistros = sinistrosRaw.filter(
-  s => s.latitude !== null && s.longitude !== null
-);
-
-const mapContainer = document.getElementById("map");
-const list = document.getElementById("sinistro-list");
-
-if (sinistros.length === 0) {
-  mapContainer.innerHTML =
-    "<p class='text-muted text-center mt-4'>Nenhum sinistro com localização</p>";
-} else {
-
+if (sinistros.length > 0) {
   const map = L.map('map').setView(
     [sinistros[0].latitude, sinistros[0].longitude],
     13
   );
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap'
-  }).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-  const heatPoints = [];
+  const heat = [];
 
   sinistros.forEach(s => {
-    const marker = L.marker([s.latitude, s.longitude]).addTo(map);
+    L.marker([s.latitude, s.longitude])
+      .addTo(map)
+      .bindPopup(`
+        <strong>Sinistro #${s.id}</strong><br>
+        ${s.tipo}<br>
+        ${s.endereco}<br>
+        <a href="/sinistros/${s.id}/">Ver detalhes</a>
+      `);
 
-    marker.bindPopup(`
-      <strong>Sinistro #${s.id}</strong><br>
-      ${s.tipo}<br>
-      ${s.endereco}<br>
-      <a href="/sinistros/${s.id}/">Ver detalhes</a>
-    `);
-
-    heatPoints.push([s.latitude, s.longitude, 0.6]);
+    heat.push([s.latitude, s.longitude, 0.7]);
 
     const li = document.createElement("li");
     li.className = "list-group-item list-group-item-action";
-    li.innerHTML = `
-      <strong>#${s.id}</strong><br>
-      <small>${s.tipo}</small>
-    `;
-
-    li.onclick = () => {
-      map.setView([s.latitude, s.longitude], 17);
-      marker.openPopup();
-    };
-
-    list.appendChild(li);
+    li.innerHTML = `<strong>#${s.id}</strong><br><small>${s.tipo}</small>`;
+    li.onclick = () => map.setView([s.latitude, s.longitude], 17);
+    document.getElementById("sinistro-list").appendChild(li);
   });
 
-  // 🔥 HEATMAP
-  L.heatLayer(heatPoints, {
-    radius: 25,
-    blur: 15,
-    maxZoom: 17
-  }).addTo(map);
+  L.heatLayer(heat, { radius: 25 }).addTo(map);
 }
 </script>
 {% endblock %}

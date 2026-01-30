@@ -1,39 +1,70 @@
 {% extends "dashboard/base.html" %}
-{% block title %}Sinistro #{{ sinistro.id }}{% endblock %}
+{% block title %}Detalhe do Sinistro{% endblock %}
 
 {% block content %}
-<h3 class="mb-3">🚨 Sinistro #{{ sinistro.id }}</h3>
 
-<div class="card mb-4 shadow-sm">
-  <div class="card-body">
-    <div class="row">
-      <div class="col-md-6">
-        <p><strong>Tipo:</strong> {{ sinistro.tipo_principal }} / {{ sinistro.tipo_secundario }}</p>
-        <p><strong>Endereço:</strong> {{ sinistro.endereco }}</p>
-        <p><strong>Ponto de referência:</strong> {{ sinistro.ponto_referencia|default:"—" }}</p>
-        <p><strong>Data:</strong> {{ sinistro.data_hora }}</p>
-        <p><strong>Vítima fatal:</strong> {{ sinistro.houve_vitima_fatal|yesno:"Sim,Não" }}</p>
-      </div>
-
-      <div class="col-md-6">
-        <p class="fw-bold mb-1">👤 Registrado por</p>
-        {% if sinistro.usuario %}
-          <p>{{ sinistro.usuario.username }} ({{ sinistro.usuario.perfil }})</p>
-        {% else %}
-          <p class="text-muted">Usuário não identificado</p>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-</div>
+<h3 class="mb-3">
+  🚨 Sinistro de {{ sinistro.tipo_principal }}
+  <small class="text-muted">({{ sinistro.endereco }})</small>
+</h3>
 
 <div class="row mb-4">
-  <div class="col-md-12">
-    <div id="map" style="height: 400px;" class="rounded shadow-sm"></div>
+  <div class="col-md-6">
+    <p><strong>Data:</strong> {{ sinistro.data_hora }}</p>
+    <p><strong>Ponto de referência:</strong> {{ sinistro.ponto_referencia|default:"—" }}</p>
+    <p><strong>Vítima fatal:</strong> {{ sinistro.houve_vitima_fatal|yesno:"Sim,Não" }}</p>
+    <p><strong>Usuário:</strong> {{ sinistro.usuario.username }}</p>
+  </div>
+
+  <div class="col-md-6">
+    <div id="map" style="height: 300px; border-radius: 8px;" class="shadow-sm"></div>
   </div>
 </div>
 
+<hr>
+
+<h5>👥 Envolvidos</h5>
+
+{% for e in sinistro.envolvidos %}
+<div class="card mb-3 shadow-sm">
+  <div class="card-body">
+
+    {% if e.tipo == "pedestre" %}
+      <strong>🚶 Pedestre</strong>
+      <p>Nome: {{ e.pedestre.nome }}</p>
+      <p>CPF: {{ e.pedestre.cpf }}</p>
+
+    {% else %}
+      <strong>🚗 Veículo ({{ e.tipo|upper }})</strong>
+      <p>Placa: {{ e.veiculo.placa }}</p>
+      <p>Chassi: {{ e.veiculo.chassi|default:"—" }}</p>
+
+      {% if e.veiculo.condutor %}
+        <hr>
+        <strong>👤 Condutor</strong>
+        <p>Nome: {{ e.veiculo.condutor.nome }}</p>
+        <p>CPF: {{ e.veiculo.condutor.cpf }}</p>
+        <p>
+          CNH:
+          {% if e.veiculo.condutor.possui_cnh %}
+            Sim ({{ e.veiculo.condutor.numero_cnh }})
+          {% else %}
+            Não possui
+          {% endif %}
+        </p>
+      {% endif %}
+    {% endif %}
+
+  </div>
+</div>
+{% empty %}
+<p class="text-muted">Nenhum envolvido informado.</p>
+{% endfor %}
+
+<hr>
+
 <h5>📸 Fotos</h5>
+
 {% if sinistro.fotos %}
 <div class="row">
   {% for foto in sinistro.fotos %}
@@ -43,12 +74,13 @@
   {% endfor %}
 </div>
 {% else %}
-<p class="text-muted">Nenhuma foto enviada.</p>
+<p class="text-muted">Nenhuma foto registrada.</p>
 {% endif %}
 
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
 {% if sinistro.latitude and sinistro.longitude %}
 const map = L.map('map').setView(
@@ -56,17 +88,15 @@ const map = L.map('map').setView(
   16
 );
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap'
-}).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 L.marker([{{ sinistro.latitude }}, {{ sinistro.longitude }}])
   .addTo(map)
-  .bindPopup("<strong>Sinistro #{{ sinistro.id }}</strong>")
+  .bindPopup("Local do Sinistro")
   .openPopup();
 {% else %}
 document.getElementById("map").innerHTML =
-  "<p class='text-center text-muted mt-4'>Localização não informada</p>";
+  "<p class='text-muted text-center mt-4'>Localização não informada</p>";
 {% endif %}
 </script>
 {% endblock %}
