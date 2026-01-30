@@ -1,4 +1,6 @@
 from .api_client import APIClient
+
+
 class DashboardService:
     @staticmethod
     def overview(token: str):

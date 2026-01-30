@@ -5,6 +5,8 @@ from django.conf import settings
 from datetime import date
 from django.urls import reverse
 
+from sinistro_dash.dashboard.services.dashboard_service import DashboardService
+
 from .services.sinistro_service import SinistroService
 from .services.auth_service import AuthService
 from .services.user_service import UserService
@@ -48,64 +50,26 @@ def logout_view(request):
 @api_login_required
 def overview_view(request):
     print("🔥 OVERVIEW VIEW CHAMADA")
+
     token = request.session.get("api_token")
-    print("📊 OVERVIEW — token recebido:", token)
+    print("📊 TOKEN:", token)
 
+    # 📊 Dados principais do dashboard
+    overview = DashboardService.overview(token)
+    if not overview:
+        messages.error(request, "Erro ao carregar dados do dashboard")
+        return redirect("dashboard:login")
+
+    # 🗺️ Dados do mapa (endpoint próprio)
     mapa = SinistroService.list_mapa(token)
-    print("🗺 MAPA:", mapa)
-
-    data_api = SinistroService.list(token, params={})
-    print("📦 DATA_API:", data_api)
-
-    total = data_api.get("total", 0)
-    items = data_api.get("items", [])
-
-    hoje = date.today().isoformat()
-
-    today_count = sum(
-        1 for s in items
-        if s["data_hora"].startswith(hoje)
-    )
-
-    mes_atual = hoje[:7]
-    month_count = sum(
-        1 for s in items
-        if s["data_hora"].startswith(mes_atual)
-    )
-
-    categorias_map = {}
-    for s in items:
-        cat = s["tipo_principal"]
-        categorias_map[cat] = categorias_map.get(cat, 0) + 1
-
-    categorias = [
-        {"label": k, "value": v}
-        for k, v in categorias_map.items()
-    ]
-
-    timeline_map = {}
-    for s in items:
-        dia = s["data_hora"][:10]
-        timeline_map[dia] = timeline_map.get(dia, 0) + 1
-
-    timeline = [
-        {"date": k, "value": v}
-        for k, v in sorted(timeline_map.items())
-    ]
 
     return render(
         request,
         "dashboard/overview.html",
         {
             "data": {
-                "cards": {
-                    "total": total,
-                    "today": today_count,
-                    "month": month_count,
-                },
-                "categorias": categorias,
-                "timeline": timeline,
-                "mapa": mapa
+                **overview,
+                "mapa": mapa,
             }
         }
     )
