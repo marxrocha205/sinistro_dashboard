@@ -17,12 +17,35 @@
       overflow-x: hidden;
     }
 
-    .sidebar {
-      width: 240px;
-      min-height: 100vh;
-      background: linear-gradient(180deg, #ffc107, #ffca2c);
+    /* ===== MENU TOGGLE ===== */
+    .menu-toggle {
       position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 1101;
+      background: #ffc107;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 20px;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 240px;
+      height: 100vh;
+      background: linear-gradient(180deg, #ffc107, #ffca2c);
       padding: 1rem;
+      transform: translateX(-100%);
+      transition: transform .25s ease;
+      z-index: 1100;
+    }
+
+    .sidebar.open {
+      transform: translateX(0);
     }
 
     .sidebar h4 {
@@ -49,12 +72,32 @@
       font-weight: 700;
     }
 
-    .content {
-      margin-left: 240px;
-      padding: 2rem;
+    /* ===== OVERLAY ===== */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.35);
+      display: none;
+      z-index: 1099;
     }
 
-    /* Loader */
+    .overlay.show {
+      display: block;
+    }
+
+    /* ===== CONTENT ===== */
+    .content {
+      padding: 2rem;
+      margin-left: 0;
+    }
+
+    @media (min-width: 992px) {
+      .content {
+        padding-left: 4rem;
+      }
+    }
+
+    /* ===== LOADER ===== */
     #loader {
       position: fixed;
       inset: 0;
@@ -62,23 +105,12 @@
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 9999;
+      z-index: 2000;
     }
 
     .spinner-border {
       width: 3rem;
       height: 3rem;
-    }
-
-    @media (max-width: 768px) {
-      .sidebar {
-        position: relative;
-        width: 100%;
-        min-height: auto;
-      }
-      .content {
-        margin-left: 0;
-      }
     }
   </style>
 
@@ -87,23 +119,27 @@
 
 <body>
 
-<div id="loader">
-  <div class="spinner-border text-warning"></div>
+<button class="menu-toggle" id="menuToggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <h4>Sinistros Web</h4>
+  <hr>
+
+  <a href="{% url 'dashboard:overview' %}">Dashboard</a>
+  <a href="{% url 'dashboard:sinistros' %}">Sinistros</a>
+  <a href="{% url 'dashboard:usuarios' %}">Usuários</a>
+  <a href="#">Relatórios</a>
+
+  <hr>
+
+  <a href="#" class="text-muted">Dark / Light</a>
+  <a href="{% url 'dashboard:logout' %}" class="logout">Logout</a>
 </div>
 
-<div class="sidebar">
-  <h4>🚨 Sinistros Web</h4>
-  <hr>
+<div class="overlay" id="overlay"></div>
 
-  <a href="{% url 'dashboard:overview' %}">📊 Dashboard</a>
-  <a href="{% url 'dashboard:sinistros' %}">🚓 Sinistros</a>
-  <a href="{% url 'dashboard:usuarios' %}">👥 Usuários</a>
-  <a href="#">📑 Relatórios</a>
-
-  <hr>
-
-  <a href="#" class="text-muted">🌓 Dark / Light</a>
-  <a href="{% url 'dashboard:logout' %}" class="logout">🚪 Logout</a>
+<div id="loader">
+  <div class="spinner-border text-warning"></div>
 </div>
 
 <div class="content">
@@ -114,11 +150,33 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("a").forEach(link => {
-      link.addEventListener("click", () => {
-        document.getElementById("loader").style.display = "flex";
-      });
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  const toggle = document.getElementById("menuToggle");
+  const loader = document.getElementById("loader");
+
+  function openMenu() {
+    sidebar.classList.add("open");
+    overlay.classList.add("show");
+  }
+
+  function closeMenu() {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+  }
+
+  toggle.addEventListener("click", () => {
+    sidebar.classList.contains("open") ? closeMenu() : openMenu();
+  });
+
+  overlay.addEventListener("click", closeMenu);
+
+  document.querySelectorAll("a[href]").forEach(link => {
+    link.addEventListener("click", e => {
+      const href = link.getAttribute("href");
+      if (href && href !== "#" && !href.startsWith("javascript")) {
+        loader.style.display = "flex";
+      }
     });
   });
 </script>
