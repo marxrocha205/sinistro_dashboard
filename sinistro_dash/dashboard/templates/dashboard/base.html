@@ -2,31 +2,83 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>{% block title %}Painel de Sinistros{% endblock %}</title>
-
+  <title>{% block title %}Sinistros Web{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Bootstrap -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  >
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Leaflet -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
   <style>
     body {
-      background-color: #f8f9fa;
+      background: #fdfcf8;
+      overflow-x: hidden;
     }
-    .navbar {
-      box-shadow: 0 2px 6px rgba(0,0,0,.1);
+
+    .sidebar {
+      width: 240px;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #ffc107, #ffca2c);
+      position: fixed;
+      padding: 1rem;
     }
-    .nav-btn {
+
+    .sidebar h4 {
+      font-weight: 800;
+      color: #212529;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 10px;
+      border-radius: 8px;
+      color: #212529;
+      text-decoration: none;
       font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .sidebar a:hover {
+      background: rgba(0,0,0,.08);
+    }
+
+    .sidebar .logout {
+      color: #dc3545;
+      font-weight: 700;
+    }
+
+    .content {
+      margin-left: 240px;
+      padding: 2rem;
+    }
+
+    /* Loader */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        min-height: auto;
+      }
+      .content {
+        margin-left: 0;
+      }
     }
   </style>
 
@@ -35,30 +87,42 @@
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-warning px-4">
-  <a class="navbar-brand fw-bold text-dark" href="{% url 'dashboard:overview' %}">
-    Painel de Sinistros
-  </a>
+<div id="loader">
+  <div class="spinner-border text-warning"></div>
+</div>
 
-  <div class="ms-auto d-flex gap-2">
-    <a href="{% url 'dashboard:overview' %}" class="btn btn-outline-dark btn-sm nav-btn">Dashboard</a>
-    <a href="{% url 'dashboard:sinistros' %}" class="btn btn-outline-dark btn-sm nav-btn">Sinistros</a>
-    <a href="{% url 'dashboard:usuarios' %}" class="btn btn-outline-dark btn-sm nav-btn">Usuários</a>
-    <a href="{% url 'dashboard:logout' %}" class="btn btn-dark btn-sm nav-btn">Sair</a>
-  </div>
-</nav>
+<div class="sidebar">
+  <h4>🚨 Sinistros Web</h4>
+  <hr>
 
-<main class="container mt-4">
+  <a href="{% url 'dashboard:overview' %}">📊 Dashboard</a>
+  <a href="{% url 'dashboard:sinistros' %}">🚓 Sinistros</a>
+  <a href="{% url 'dashboard:usuarios' %}">👥 Usuários</a>
+  <a href="#">📑 Relatórios</a>
+
+  <hr>
+
+  <a href="#" class="text-muted">🌓 Dark / Light</a>
+  <a href="{% url 'dashboard:logout' %}" class="logout">🚪 Logout</a>
+</div>
+
+<div class="content">
   {% block content %}{% endblock %}
-</main>
+</div>
 
-<!-- JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        document.getElementById("loader").style.display = "flex";
+      });
+    });
+  });
+</script>
 
 {% block extra_js %}{% endblock %}
-
 </body>
 </html>

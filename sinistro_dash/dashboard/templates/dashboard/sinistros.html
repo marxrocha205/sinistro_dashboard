@@ -2,16 +2,23 @@
 {% block title %}Sinistros{% endblock %}
 
 {% block content %}
-
-<h3 class="mb-3">Sinistros</h3>
+<h3 class="mb-3">🚓 Sinistros</h3>
 
 <form method="get" class="row g-2 mb-3">
   <div class="col-md-3">
     <select name="tipo" class="form-select">
-      <option value="">Todos os tipos</option>
+      <option value="">Tipo</option>
       <option value="CARRO">Carro</option>
       <option value="MOTO">Moto</option>
     </select>
+  </div>
+
+  <div class="col-md-3">
+    <input type="date" name="data_ini" class="form-control">
+  </div>
+
+  <div class="col-md-3">
+    <input type="date" name="data_fim" class="form-control">
   </div>
 
   <div class="col-md-2">
@@ -19,11 +26,10 @@
   </div>
 </form>
 
-<table class="table table-bordered table-striped">
+<table class="table table-hover shadow-sm">
   <thead class="table-warning">
     <tr>
       <th>Data</th>
-      <th>Usuário</th>
       <th>Tipo</th>
       <th>Endereço</th>
       <th></th>
@@ -31,36 +37,28 @@
   </thead>
   <tbody>
     {% for s in sinistros %}
-      <tr>
-        <td>{{ s.data_hora }}</td>
-        <td>{{ s.usuario.username }}</td>
-        <td>{{ s.tipo_principal }}</td>
-        <td>{{ s.endereco }}</td>
-        <td>
-          <a href="{% url 'dashboard:sinistro_detail' s.id %}"
-             class="btn btn-sm btn-outline-dark">
-            Ver
-          </a>
-        </td>
-      </tr>
-    {% empty %}
-      <tr>
-        <td colspan="5" class="text-center">
-          Nenhum sinistro encontrado
-        </td>
-      </tr>
+    <tr>
+      <td>{{ s.data_hora }}</td>
+      <td>{{ s.tipo_principal }}</td>
+      <td>{{ s.endereco }}</td>
+      <td>
+        <a href="{% url 'dashboard:sinistro_detail' s.id %}" class="btn btn-sm btn-outline-dark">
+          Ver
+        </a>
+      </td>
+    </tr>
     {% endfor %}
   </tbody>
 </table>
 
-<nav>
-  <ul class="pagination">
+<nav class="d-flex align-items-center gap-2">
+  <strong>Página:</strong>
+  <ul class="pagination mb-0">
     {% for p in pages %}
-      <li class="page-item {% if p == page %}active{% endif %}">
-        <a class="page-link" href="?page={{ p }}">{{ p }}</a>
-      </li>
+    <li class="page-item {% if p == page %}active{% endif %}">
+      <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+    </li>
     {% endfor %}
   </ul>
 </nav>
-
 {% endblock %}
