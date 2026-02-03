@@ -2,63 +2,86 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<h3 class="mb-4"> Visão Geral dos Sinistros</h3>
 
-<!-- 🔢 CARDS -->
-<div class="row mb-4">
-  <div class="col-md-4">
-    <div class="card shadow-sm text-center">
+<!-- TÍTULO -->
+<h3 class="mb-4 page-title">
+  Visão Geral dos Sinistros
+</h3>
+
+<!-- CARDS -->
+<div class="row mb-4 g-3">
+
+  <div class="col-md-4 col-sm-12">
+    <div class="card shadow-sm border-0 h-100">
       <div class="card-body">
-        <h6>Total</h6>
-        <h3>{{ data.cards.total }}</h3>
+        <small class="text-muted">Total de sinistros</small>
+        <h2 class="fw-bold mt-1">{{ data.cards.total }}</h2>
+        <span class="text-muted">Registrados no sistema</span>
       </div>
     </div>
   </div>
 
-  <div class="col-md-4">
-    <div class="card shadow-sm text-center">
+  <div class="col-md-4 col-sm-12">
+    <div class="card shadow-sm border-0 h-100">
       <div class="card-body">
-        <h6>Hoje</h6>
-        <h3>{{ data.cards.today }}</h3>
+        <small class="text-muted">Hoje</small>
+        <h2 class="fw-bold mt-1">{{ data.cards.today }}</h2>
+        <span class="text-muted">Ocorrências no dia</span>
       </div>
     </div>
   </div>
 
-  <div class="col-md-4">
-    <div class="card shadow-sm text-center">
+  <div class="col-md-4 col-sm-12">
+    <div class="card shadow-sm border-0 h-100">
       <div class="card-body">
-        <h6>No mês</h6>
-        <h3>{{ data.cards.month }}</h3>
+        <small class="text-muted">Este mês</small>
+        <h2 class="fw-bold mt-1">{{ data.cards.month }}</h2>
+        <span class="text-muted">Sinistros no mês atual</span>
       </div>
     </div>
   </div>
+
 </div>
 
-<!-- 🗺️ MAPA + LISTA -->
-<div class="row">
-  <div class="col-md-3">
+<!-- MAPA + LISTA -->
+<div class="row g-3">
 
-    <div class="card shadow-sm">
+  <!-- LISTA -->
+  <div class="col-md-3 col-sm-12">
+    <div class="card shadow-sm h-100">
       <div class="card-header fw-bold">
-         Sinistros
+        Últimos sinistros
       </div>
 
       <ul class="list-group list-group-flush" id="sinistro-list"></ul>
 
-      <!-- 📄 PAGINAÇÃO -->
+      <!-- PAGINAÇÃO -->
       <div class="card-footer text-center">
         <nav>
-          <ul class="pagination pagination-sm justify-content-center mb-0" id="sinistro-pagination"></ul>
+          <ul
+            class="pagination pagination-sm justify-content-center mb-0"
+            id="sinistro-pagination"
+          ></ul>
         </nav>
       </div>
     </div>
-
   </div>
 
-  <div class="col-md-9">
-    <div id="map" style="height: 500px; border-radius: 8px;" class="shadow-sm"></div>
+  <!-- MAPA -->
+  <div class="col-md-9 col-sm-12">
+    <div class="mb-2 fw-bold page-title">
+      Mapa de Ocorrências
+    </div>
+
+    <div
+      id="map"
+      style="height: 500px; border-radius: 8px;"
+      class="shadow-sm"
+    ></div>
   </div>
+
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
