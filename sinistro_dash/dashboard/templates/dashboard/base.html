@@ -10,116 +10,141 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
-    body {
-      background: #fdfcf8;
-      overflow-x: hidden;
+  body {
+    background: #fdfcf8;
+    overflow-x: hidden;
+  }
+
+  /* =====================
+     BOTÃO MENU
+  ====================== */
+  .menu-toggle {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1200;
+    background: #ffc107;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 20px;
+    transition: opacity .2s ease;
+  }
+
+  .menu-toggle.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* =====================
+     SIDEBAR
+  ====================== */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 240px;
+    height: 100vh;
+    background: linear-gradient(180deg, #ffc107, #ffca2c);
+    padding: 1rem;
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    z-index: 1100;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar h4 {
+    font-weight: 800;
+    color: #212529;
+  }
+
+  .sidebar a {
+    display: block;
+    padding: 10px;
+    border-radius: 8px;
+    color: #212529;
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .sidebar a:hover {
+    background: rgba(0,0,0,.08);
+  }
+
+  .sidebar .logout {
+    color: #dc3545;
+    font-weight: 700;
+  }
+
+  /* =====================
+     OVERLAY
+  ====================== */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.35);
+    display: none;
+    z-index: 1099;
+  }
+
+  .overlay.show {
+    display: block;
+  }
+
+  /* =====================
+     CONTEÚDO
+  ====================== */
+  .content {
+    padding: 2rem;
+    padding-left: 4.5rem; /* espaço pro botão ☰ */
+    transition: padding-left .2s ease;
+  }
+
+  /* =====================
+     TÍTULOS
+  ====================== */
+  .page-title {
+    margin-bottom: 1.5rem;
+  }
+
+  /* =====================
+     LOADER
+  ====================== */
+  #loader {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+  }
+
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  /* =====================
+     MOBILE
+  ====================== */
+  @media (max-width: 768px) {
+    .content {
+      padding-left: 1rem;
+      padding-right: 1rem;
+      padding-top: 3.5rem;
     }
 
     .page-title {
-      margin-left: 50px;
+      margin-top: 1rem;
     }
+  }
+</style>
 
-    @media (max-width: 768px) {
-      .page-title {
-        margin-left: 0;
-        margin-top: 40px;
-      }
-
-      /* BOTÃO MENU */
-      .menu-toggle {
-        position: fixed;
-        top: 15px;
-        left: 15px;
-        z-index: 1200;
-        background: #ffc107;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 20px;
-        transition: opacity .2s ease;
-      }
-
-      .menu-toggle.hide {
-        opacity: 0;
-        pointer-events: none;
-      }
-
-      /* SIDEBAR */
-      .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 240px;
-        height: 100vh;
-        background: linear-gradient(180deg, #ffc107, #ffca2c);
-        padding: 1rem;
-        transform: translateX(-100%);
-        transition: transform .25s ease;
-        z-index: 1100;
-      }
-
-      .sidebar.open {
-        transform: translateX(0);
-      }
-
-      .sidebar h4 {
-        font-weight: 800;
-        color: #212529;
-      }
-
-      .sidebar a {
-        display: block;
-        padding: 10px;
-        border-radius: 8px;
-        color: #212529;
-        text-decoration: none;
-        font-weight: 500;
-        margin-bottom: 6px;
-      }
-
-      .sidebar a:hover {
-        background: rgba(0, 0, 0, .08);
-      }
-
-      .sidebar .logout {
-        color: #dc3545;
-        font-weight: 700;
-      }
-
-      /* OVERLAY */
-      .overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, .35);
-        display: none;
-        z-index: 1099;
-      }
-
-      .overlay.show {
-        display: block;
-      }
-
-      /* CONTEÚDO */
-      .content {
-        padding: 2rem;
-      }
-
-      /* LOADER */
-      #loader {
-        position: fixed;
-        inset: 0;
-        background: rgba(255, 255, 255, .8);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 2000;
-      }
-
-      .spinner-border {
-        width: 3rem;
-        height: 3rem;
-      }
-  </style>
 
   {% block extra_css %}{% endblock %}
 </head>
