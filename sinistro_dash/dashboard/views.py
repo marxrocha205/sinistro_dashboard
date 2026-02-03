@@ -183,3 +183,26 @@ def sinistro_detail_view(request, sinistro_id: int):
             "API_BASE": settings.API_BASE_URL,
         },
     )
+@api_login_required
+def relatorios_view(request):
+    token = request.session.get("api_token")
+
+    filtros = {
+        "data_ini": request.GET.get("data_ini"),
+        "data_fim": request.GET.get("data_fim"),
+        "tipo": request.GET.get("tipo"),
+        "vitima_fatal": request.GET.get("vitima_fatal"),
+        "usuario_id": request.GET.get("usuario_id"),
+    }
+
+    # por enquanto reutiliza listagem
+    data = SinistroService.list(token, params=filtros)
+
+    return render(
+        request,
+        "dashboard/relatorios.html",
+        {
+            "sinistros": data.get("items", []),
+            "filtros": filtros,
+        }
+    )
