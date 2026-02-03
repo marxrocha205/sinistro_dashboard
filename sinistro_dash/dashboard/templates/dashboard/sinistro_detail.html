@@ -3,7 +3,7 @@
 
 {% block content %}
 <h3 class="mb-3">
-  🚨 Sinistro em {{ sinistro.endereco }}
+   Sinistro em {{ sinistro.endereco }}
 </h3>
 
 <div class="row">
@@ -20,7 +20,7 @@
 
 <hr>
 
-<h5>👥 Envolvidos</h5>
+<h5> Envolvidos</h5>
 
 {% for e in sinistro.envolvidos %}
 <div class="card mb-2">
@@ -32,7 +32,7 @@
 
 <hr>
 
-<h5>📸 Fotos</h5>
+<h5> Fotos</h5>
 <div class="row">
 {% for f in sinistro.fotos %}
   <div class="col-md-3">

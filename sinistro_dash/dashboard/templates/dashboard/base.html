@@ -166,15 +166,24 @@
   toggle.addEventListener("click", openMenu);
   overlay.addEventListener("click", closeMenu);
 
-  document.querySelectorAll("a[href]").forEach(link => {
-    link.addEventListener("click", () => {
-      const href = link.getAttribute("href");
-      if (href && href !== "#") {
-        loader.style.display = "flex";
-      }
-    });
+  // Loader APENAS para navegação real
+  document.addEventListener("click", function (e) {
+    const link = e.target.closest("a");
+
+    if (!link) return;
+
+    const href = link.getAttribute("href");
+
+    // ignora âncoras, paginação JS e botões
+    if (!href || href === "#" || href.startsWith("javascript")) return;
+
+    // ignora links de paginação do overview
+    if (link.classList.contains("page-link")) return;
+
+    loader.style.display = "flex";
   });
 </script>
+
 
 {% block extra_js %}{% endblock %}
 </body>
