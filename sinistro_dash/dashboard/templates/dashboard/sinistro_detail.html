@@ -3,15 +3,23 @@
 
 {% block content %}
 
-<h3 class="mb-3 page-title">
+<h3 class="mb-4 page-title">
   Sinistro em {{ sinistro.endereco }}
 </h3>
 
 <div class="row mb-4">
   <div class="col-md-6 col-sm-12">
-    <p><strong>Tipo:</strong> {{ sinistro.tipo_principal }}</p>
+    <p><strong>Tipo principal:</strong> {{ sinistro.tipo_principal }}</p>
+    <p><strong>Tipo secundário:</strong> {{ sinistro.tipo_secundario }}</p>
     <p><strong>Data:</strong> {{ sinistro.data_hora }}</p>
     <p><strong>Vítima fatal:</strong> {{ sinistro.houve_vitima_fatal|yesno:"Sim,Não" }}</p>
+
+    {% if sinistro.usuario %}
+      <p>
+        <strong>Registrado por:</strong>
+        {{ sinistro.usuario.username }} ({{ sinistro.usuario.perfil }})
+      </p>
+    {% endif %}
   </div>
 
   <div class="col-md-6 col-sm-12">
@@ -23,47 +31,46 @@
 
 <h5 class="mb-3">Envolvidos</h5>
 
-<!-- VEÍCULOS -->
-{% if sinistro.veiculos %}
-  {% for v in sinistro.veiculos %}
-    <div class="card mb-3 shadow-sm">
-      <div class="card-body">
+{% for e in sinistro.envolvidos %}
+  <div class="card mb-3 shadow-sm">
+    <div class="card-body">
 
-        <strong>Veículo ({{ v.tipo|upper }})</strong>
+      {% if e.tipo == "pedestre" %}
+        <h6 class="fw-bold">Pedestre</h6>
+        <p><strong>Nome:</strong> {{ e.pedestre.nome }}</p>
+        <p><strong>CPF:</strong> {{ e.pedestre.cpf }}</p>
 
-        <p class="mb-1"><strong>Placa:</strong> {{ v.placa|default:"—" }}</p>
-        <p class="mb-1"><strong>Chassi:</strong> {{ v.chassi|default:"—" }}</p>
+      {% else %}
+        <h6 class="fw-bold">Veículo ({{ e.tipo|upper }})</h6>
 
-        {% if v.condutor %}
-          <hr>
-          <strong>Condutor</strong>
-          <p class="mb-1"><strong>Nome:</strong> {{ v.condutor.nome }}</p>
-          <p class="mb-1"><strong>CPF:</strong> {{ v.condutor.cpf }}</p>
-        {% else %}
-          <p class="text-muted">Condutor não informado</p>
+        <p><strong>Placa:</strong> {{ e.veiculo.placa }}</p>
+        <p><strong>Chassi:</strong> {{ e.veiculo.chassi|default:"—" }}</p>
+
+        {% if e.veiculo.descricao_outro %}
+          <p><strong>Descrição:</strong> {{ e.veiculo.descricao_outro }}</p>
         {% endif %}
 
-      </div>
-    </div>
-  {% endfor %}
-{% endif %}
+        {% if e.veiculo.condutor %}
+          <hr>
+          <h6 class="fw-bold">Condutor</h6>
+          <p><strong>Nome:</strong> {{ e.veiculo.condutor.nome }}</p>
+          <p><strong>CPF:</strong> {{ e.veiculo.condutor.cpf }}</p>
+          <p>
+            <strong>CNH:</strong>
+            {% if e.veiculo.condutor.possui_cnh %}
+              Sim ({{ e.veiculo.condutor.numero_cnh }})
+            {% else %}
+              Não possui
+            {% endif %}
+          </p>
+        {% endif %}
+      {% endif %}
 
-<!-- PEDESTRES -->
-{% if sinistro.pedestres %}
-  {% for p in sinistro.pedestres %}
-    <div class="card mb-3 shadow-sm">
-      <div class="card-body">
-        <strong>Pedestre</strong>
-        <p class="mb-1"><strong>Nome:</strong> {{ p.nome }}</p>
-        <p class="mb-1"><strong>CPF:</strong> {{ p.cpf }}</p>
-      </div>
     </div>
-  {% endfor %}
-{% endif %}
-
-{% if not sinistro.veiculos and not sinistro.pedestres %}
-  <p class="text-muted">Nenhum envolvido registrado.</p>
-{% endif %}
+  </div>
+{% empty %}
+  <p class="text-muted">Nenhum envolvido informado.</p>
+{% endfor %}
 
 <hr>
 
