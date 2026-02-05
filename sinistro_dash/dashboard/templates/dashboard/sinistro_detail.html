@@ -2,44 +2,85 @@
 {% block title %}Detalhe do Sinistro{% endblock %}
 
 {% block content %}
-<h3 class="mb-3">
-   Sinistro em {{ sinistro.endereco }}
+
+<h3 class="mb-3 page-title">
+  Sinistro em {{ sinistro.endereco }}
 </h3>
 
-<div class="row">
-  <div class="col-md-6">
+<div class="row mb-4">
+  <div class="col-md-6 col-sm-12">
     <p><strong>Tipo:</strong> {{ sinistro.tipo_principal }}</p>
     <p><strong>Data:</strong> {{ sinistro.data_hora }}</p>
     <p><strong>Vítima fatal:</strong> {{ sinistro.houve_vitima_fatal|yesno:"Sim,Não" }}</p>
   </div>
 
-  <div class="col-md-6">
+  <div class="col-md-6 col-sm-12">
     <div id="map" style="height:300px" class="rounded shadow-sm"></div>
   </div>
 </div>
 
 <hr>
 
-<h5> Envolvidos</h5>
+<h5 class="mb-3">Envolvidos</h5>
 
-{% for e in sinistro.envolvidos %}
-<div class="card mb-2">
-  <div class="card-body">
-    <strong>{{ e.tipo|upper }}</strong>
-  </div>
-</div>
-{% endfor %}
+<!-- VEÍCULOS -->
+{% if sinistro.veiculos %}
+  {% for v in sinistro.veiculos %}
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+
+        <strong>Veículo ({{ v.tipo|upper }})</strong>
+
+        <p class="mb-1"><strong>Placa:</strong> {{ v.placa|default:"—" }}</p>
+        <p class="mb-1"><strong>Chassi:</strong> {{ v.chassi|default:"—" }}</p>
+
+        {% if v.condutor %}
+          <hr>
+          <strong>Condutor</strong>
+          <p class="mb-1"><strong>Nome:</strong> {{ v.condutor.nome }}</p>
+          <p class="mb-1"><strong>CPF:</strong> {{ v.condutor.cpf }}</p>
+        {% else %}
+          <p class="text-muted">Condutor não informado</p>
+        {% endif %}
+
+      </div>
+    </div>
+  {% endfor %}
+{% endif %}
+
+<!-- PEDESTRES -->
+{% if sinistro.pedestres %}
+  {% for p in sinistro.pedestres %}
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+        <strong>Pedestre</strong>
+        <p class="mb-1"><strong>Nome:</strong> {{ p.nome }}</p>
+        <p class="mb-1"><strong>CPF:</strong> {{ p.cpf }}</p>
+      </div>
+    </div>
+  {% endfor %}
+{% endif %}
+
+{% if not sinistro.veiculos and not sinistro.pedestres %}
+  <p class="text-muted">Nenhum envolvido registrado.</p>
+{% endif %}
 
 <hr>
 
-<h5> Fotos</h5>
-<div class="row">
-{% for f in sinistro.fotos %}
-  <div class="col-md-3">
-    <img src="{{ f.url }}" class="img-fluid rounded shadow-sm">
+<h5 class="mb-3">Fotos</h5>
+
+{% if sinistro.fotos %}
+  <div class="row">
+    {% for f in sinistro.fotos %}
+      <div class="col-md-3 col-sm-6 mb-3">
+        <img src="{{ f.url }}" class="img-fluid rounded shadow-sm">
+      </div>
+    {% endfor %}
   </div>
-{% endfor %}
-</div>
+{% else %}
+  <p class="text-muted">Nenhuma foto registrada.</p>
+{% endif %}
+
 {% endblock %}
 
 {% block extra_js %}

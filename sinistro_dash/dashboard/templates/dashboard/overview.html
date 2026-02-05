@@ -44,7 +44,8 @@
 </div>
 
 <!-- MAPA + LISTA -->
-<div class="row g-3">
+<div class="row g-3 flex-column-reverse flex-md-row">
+
 
   <!-- LISTA -->
   <div class="col-md-3 col-sm-12">
@@ -58,10 +59,7 @@
       <!-- PAGINAÇÃO -->
       <div class="card-footer text-center">
         <nav>
-          <ul
-            class="pagination pagination-sm justify-content-center mb-0"
-            id="sinistro-pagination"
-          ></ul>
+          <ul class="pagination pagination-sm justify-content-center mb-0" id="sinistro-pagination"></ul>
         </nav>
       </div>
     </div>
@@ -73,11 +71,7 @@
       Mapa de Ocorrências
     </div>
 
-    <div
-      id="map"
-      style="height: 500px; border-radius: 8px;"
-      class="shadow-sm"
-    ></div>
+    <div id="map" style="height: 500px; border-radius: 8px;" class="shadow-sm"></div>
   </div>
 
 </div>
@@ -89,89 +83,89 @@
 <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 
 <script>
-/* ======================
-   DADOS
-====================== */
-const sinistros = {{ data.mapa|safe }};
-const ITEMS_PER_PAGE = 7;
+  /* ======================
+     DADOS
+  ====================== */
+  const sinistros = {{ data.mapa| safe }};
+  const ITEMS_PER_PAGE = 7;
 
-let currentPage = 1;
-const totalPages = Math.ceil(sinistros.length / ITEMS_PER_PAGE);
+  let currentPage = 1;
+  const totalPages = Math.ceil(sinistros.length / ITEMS_PER_PAGE);
 
-const listEl = document.getElementById("sinistro-list");
-const paginationEl = document.getElementById("sinistro-pagination");
+  const listEl = document.getElementById("sinistro-list");
+  const paginationEl = document.getElementById("sinistro-pagination");
 
-/* ======================
-   MAPA
-====================== */
-let map;
+  /* ======================
+     MAPA
+  ====================== */
+  let map;
 
-if (sinistros.length > 0) {
-  map = L.map('map').setView(
-    [sinistros[0].latitude, sinistros[0].longitude],
-    13
-  );
+  if (sinistros.length > 0) {
+    map = L.map('map').setView(
+      [sinistros[0].latitude, sinistros[0].longitude],
+      13
+    );
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-  sinistros.forEach(s => {
-    L.marker([s.latitude, s.longitude])
-      .addTo(map)
-      .bindPopup(`
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    
+    sinistros.forEach(s => {
+      L.marker([s.latitude, s.longitude])
+        .addTo(map)
+        .bindPopup(`
         <strong>Sinistro #${s.id}</strong><br>
         ${s.tipo}<br>
         ${s.endereco}<br>
         <a href="/sinistros/${s.id}/">Ver detalhes</a>
       `);
-  });
-}
-
-/* ======================
-   LISTA + PAGINAÇÃO
-====================== */
-function renderList() {
-  listEl.innerHTML = "";
-
-  const start = (currentPage - 1) * ITEMS_PER_PAGE;
-  const end = start + ITEMS_PER_PAGE;
-
-  sinistros.slice(start, end).forEach(s => {
-    const li = document.createElement("li");
-    li.className = "list-group-item list-group-item-action";
-    li.innerHTML = `
-      <strong>#${s.id}</strong><br>
-      <small>${s.tipo}</small>
-    `;
-
-    li.onclick = () => {
-      map.setView([s.latitude, s.longitude], 17);
-    };
-
-    listEl.appendChild(li);
-  });
-}
-
-function renderPagination() {
-  paginationEl.innerHTML = "";
-
-  for (let i = 1; i <= totalPages; i++) {
-    const li = document.createElement("li");
-    li.className = `page-item ${i === currentPage ? "active" : ""}`;
-
-    li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-
-    li.onclick = (e) => {
-      e.preventDefault();
-      currentPage = i;
-      renderList();
-      renderPagination();
-    };
-
-    paginationEl.appendChild(li);
+    });
   }
-}
 
-renderList();
-renderPagination();
+  /* ======================
+     LISTA + PAGINAÇÃO
+  ====================== */
+  function renderList() {
+    listEl.innerHTML = "";
+
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+
+    sinistros.slice(start, end).forEach(s => {
+      const li = document.createElement("li");
+      li.className = "list-group-item list-group-item-action";
+      li.innerHTML = `
+  <div class="fw-bold">Sinistro #${s.id}</div>
+  <small class="text-muted">${s.tipo}</small>
+`;
+
+      li.onclick = () => {
+        map.setView([s.latitude, s.longitude], 17);
+      };
+
+      listEl.appendChild(li);
+    });
+  }
+
+  function renderPagination() {
+    paginationEl.innerHTML = "";
+
+    for (let i = 1; i <= totalPages; i++) {
+      const li = document.createElement("li");
+      li.className = `page-item ${i === currentPage ? "active" : ""}`;
+
+      li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+
+      li.onclick = (e) => {
+        e.preventDefault();
+        currentPage = i;
+        renderList();
+        renderPagination();
+      };
+
+      paginationEl.appendChild(li);
+    }
+  }
+
+  renderList();
+  renderPagination();
 </script>
 {% endblock %}
