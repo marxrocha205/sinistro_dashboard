@@ -29,20 +29,33 @@
 
 <hr>
 
-<h5 class="mb-3">Envolvidos</h5>
+<h5 class="mb-3">
+  Envolvidos ({{ sinistro.envolvidos|length }})
+</h5>
 
 {% for e in sinistro.envolvidos %}
-  <div class="card mb-3 shadow-sm">
+  <div class="card mb-3 shadow-sm border-0">
     <div class="card-body">
 
+      <div class="mb-2">
+        <span class="badge bg-secondary">
+          Envolvido {{ forloop.counter }}
+        </span>
+
+        {% if e.tipo == "pedestre" %}
+          <span class="badge bg-info text-dark ms-2">Pedestre</span>
+        {% else %}
+          <span class="badge bg-warning text-dark ms-2">
+            Veículo ({{ e.tipo|upper }})
+          </span>
+        {% endif %}
+      </div>
+
       {% if e.tipo == "pedestre" %}
-        <h6 class="fw-bold">Pedestre</h6>
         <p><strong>Nome:</strong> {{ e.pedestre.nome }}</p>
         <p><strong>CPF:</strong> {{ e.pedestre.cpf }}</p>
 
       {% else %}
-        <h6 class="fw-bold">Veículo ({{ e.tipo|upper }})</h6>
-
         <p><strong>Placa:</strong> {{ e.veiculo.placa }}</p>
         <p><strong>Chassi:</strong> {{ e.veiculo.chassi|default:"—" }}</p>
 
@@ -52,7 +65,7 @@
 
         {% if e.veiculo.condutor %}
           <hr>
-          <h6 class="fw-bold">Condutor</h6>
+          <p class="fw-bold mb-1">Condutor</p>
           <p><strong>Nome:</strong> {{ e.veiculo.condutor.nome }}</p>
           <p><strong>CPF:</strong> {{ e.veiculo.condutor.cpf }}</p>
           <p>
@@ -72,7 +85,6 @@
   <p class="text-muted">Nenhum envolvido informado.</p>
 {% endfor %}
 
-<hr>
 
 <h5 class="mb-3">Fotos</h5>
 
